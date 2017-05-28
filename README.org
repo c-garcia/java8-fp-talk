@@ -1,0 +1,4 @@
+#+title: Functional Programming in Java 8 
+#+author: Cristobal Garcia
+
+Just some slides to help driving a talk for the [[https://www.capside.com][CAPSiDE]] /Functional Nomads/ group.
