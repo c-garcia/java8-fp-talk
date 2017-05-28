@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Functional Programming in Java8</title>
+<meta name="author" content="(Cristobal Garcia)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/css/theme/beige.css" id="theme"/>
+
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1>Functional Programming in Java8</h1><h2>Cristobal Garcia</h2>
+</section>
+
+<section>
+<section id="slide-org18f39c6">
+<h2 id="org18f39c6">Classic Java</h2>
+<div class="outline-text-2" id="text-org18f39c6">
+</div></section>
+<section id="slide-org87a6351">
+<h3 id="org87a6351">History</h3>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">jdk1.0</td>
+<td class="org-right">1995</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">jdk1.1</td>
+<td class="org-right">1997</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">jdk1.2</td>
+<td class="org-right">1998</td>
+<td class="org-left">java2</td>
+</tr>
+
+<tr>
+<td class="org-left">jdk1.3</td>
+<td class="org-right">2000</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">j2se 1.4</td>
+<td class="org-right">2002</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section id="slide-org82ae620">
+<h3 id="org82ae620">History II</h3>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">j2se 5.0</td>
+<td class="org-right">2004</td>
+<td class="org-left">Generics</td>
+</tr>
+
+<tr>
+<td class="org-left">java se 6</td>
+<td class="org-right">2006</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">java se 7</td>
+<td class="org-right">2011</td>
+<td class="org-left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="org-left">java se 8</td>
+<td class="org-right">2014</td>
+<td class="org-left">Lambdas</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section id="slide-org0167d57">
+<h3 id="org0167d57">OO in Java</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #5180b3;">public</span> <span style="color: #5180b3;">interface</span> <span style="color: #cd5542;">Resource</span> {
+    <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">acquire</span>();
+    <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">close</span>();
+}
+
+<span style="color: #5180b3;">public</span> <span style="color: #5180b3;">class</span> <span style="color: #cd5542;">MiniFile</span> <span style="color: #5180b3;">extends</span> <span style="color: #cd5542;">Object</span> <span style="color: #5180b3;">implements</span> <span style="color: #cd5542;">Resource</span> {
+    <span style="color: #ab75c3;">@Override</span>
+    <span style="color: #5180b3;">public</span> <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">acquire</span>(){
+        <span style="color: #656565;">//</span>
+    }
+
+    <span style="color: #ab75c3;">@Override</span>
+    <span style="color: #5180b3;">public</span> <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">close</span>(){
+        <span style="color: #656565;">//</span>
+    }
+}
+</pre>
+</div>
+
+</section>
+<section id="slide-orge116365">
+<h3 id="orge116365">Java type system</h3>
+<ul>
+<li>null type</li>
+<li>primitive types</li>
+<li>array types</li>
+<li>class types (generics)</li>
+<li>interface types (generics)</li>
+
+</ul>
+
+</section>
+<section id="slide-orga556eec">
+<h3 id="orga556eec">Sorting an array in Java7</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #656565;">// </span><span style="color: #757575;">Assuming existing distanceToOrigin method</span>
+<span style="color: #cd5542;">double</span>[][] <span style="color: #baba36;">twoDim</span> = {{1.0,2.0}, {-1.0, 0.0}, {-2.0,0.0}};
+
+Arrays.sort(twoDim, <span style="color: #5180b3;">new</span> <span style="color: #cd5542;">Comparator</span>&lt;<span style="color: #cd5542;">double</span>[]&gt;() {
+    <span style="color: #ab75c3;">@Override</span>
+    <span style="color: #5180b3;">public</span> <span style="color: #cd5542;">int</span> <span style="color: #6aaf50;">compare</span>(<span style="color: #cd5542;">double</span>[] <span style="color: #baba36;">o1</span>, <span style="color: #cd5542;">double</span>[] <span style="color: #baba36;">o2</span>) {
+        <span style="color: #5180b3;">return</span> distanceToOrigin(o1) - distanceToOrigin(o2);
+    }
+});
+</pre>
+</div>
+
+</section>
+<section id="slide-org9687f19">
+<h3 id="org9687f19">More occurrences</h3>
+<ul>
+<li>Comparator (the one before)</li>
+<li>Swing Listeners</li>
+<li>Runnable</li>
+<li>Collections
+<ul>
+<li>Guava</li>
+<li>CollectionUtils</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org5c0fbc7">
+<h3 id="org5c0fbc7">Sorting an array in Java8</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #656565;">// </span><span style="color: #757575;">Assuming existing distanceToOrigin method</span>
+<span style="color: #cd5542;">double</span>[][] <span style="color: #baba36;">twoDim</span> = {{1.0,2.0}, {-1.0, 0.0}, {-2.0,0.0}};
+
+Arrays.sort(
+   twoDim,
+   (p, q) -&gt; distanceToOrigin(p) - distanceToOrigin(q)
+);
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org1bce24c">
+<h2 id="org1bce24c">Java 8</h2>
+<ul>
+<li>Lambda Expressions</li>
+<li>Functional interfaces</li>
+<li>Streams</li>
+<li>Method references</li>
+<li>Default methods</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org0c25061">
+<h2 id="org0c25061">Lambda expressions and functional interfaces</h2>
+<div class="outline-text-2" id="text-org0c25061">
+</div></section>
+<section id="slide-org1d22c9b">
+<h3 id="org1d22c9b">Lambda Expressions</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java">(<span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">b</span>, <span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">b</span>) -&gt; a * 2 + b * 3;
+
+(<span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">a</span>, <span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">b</span>) -&gt; {
+    System.out.println(<span style="color: #bdbc61;">"..."</span>);
+    <span style="color: #5180b3;">return</span> a + b / 2;
+}
+</pre>
+</div>
+
+</section>
+<section id="slide-orge30550b">
+<h3 id="orge30550b">How?</h3>
+<ul>
+<li>Functional interfaces</li>
+<li>Those with <b>only one</b> abstract function</li>
+<li><code>@FunctionalInterface</code></li>
+<li>Lambdas can <i>appear</i> where functional interfaces do</li>
+<li>Type inference</li>
+
+</ul>
+
+</section>
+<section id="slide-org7daf1ac">
+<h3 id="org7daf1ac">Sorting arrays: revisited</h3>
+<ul>
+<li><code>sort(T[] a, Comparator&lt;? super T&gt; c)</code></li>
+<li><code>Comparator&lt;T&gt;</code> is a functional interface
+<ul>
+<li><code>compare(T o1, T o2)</code></li>
+
+</ul></li>
+<li><code>(a,b) -&gt; a - b</code> gets translated into obj
+<ul>
+<li>implements <code>Comparator</code></li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org4dea0a7">
+<h3 id="org4dea0a7">Sorting arrays: summary</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">Integer</span>[] <span style="color: #baba36;">nums</span> = <span style="color: #5180b3;">new</span> <span style="color: #cd5542;">Integer</span>[]{8,32,1,-1,-99,43,22};
+
+Arrays.sort(nums, (x,y) -&gt; x * 2 - y);
+</pre>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-org081d2dd">
+<h2 id="org081d2dd">Streams</h2>
+<div class="outline-text-2" id="text-org081d2dd">
+</div></section>
+<section id="slide-org17ccbdf">
+<h3 id="org17ccbdf">A quick detour</h3>
+<ul>
+<li>Collection: proper Collections
+<ul>
+<li>Set</li>
+<li>List</li>
+<li>Queue</li>
+<li>&#x2026;</li>
+
+</ul></li>
+<li>Map: they offer collection views</li>
+
+</ul>
+
+</section>
+<section id="slide-org502d47a">
+<h3 id="org502d47a">Streams</h3>
+<ul>
+<li>Extend collections behaviour</li>
+<li>Sequence generalization (Monadic)
+<ul>
+<li>Parallel version</li>
+
+</ul></li>
+<li>Transform and aggregate</li>
+<li><code>.stream()</code> / <code>.collect()</code></li>
+<li>integrated with lambdas</li>
+
+</ul>
+
+
+</section>
+<section id="slide-org79bdd35">
+<h3 id="org79bdd35">Example</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">List</span>&lt;<span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">l</span> = Arrays.asList(<span style="color: #5180b3;">new</span> <span style="color: #cd5542;">Integer</span>[] {1,2,3,4});
+<span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">m</span> = l.stream()
+    .map(i -&gt; i * 2)
+    .reduce(0, (x,y) -&gt; x + y);
+</pre>
+</div>
+
+</section>
+<section id="slide-org4b54c57">
+<h3 id="org4b54c57">Some methods</h3>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">map</td>
+<td class="org-left">flatMap</td>
+</tr>
+
+<tr>
+<td class="org-left">filter</td>
+<td class="org-left">limit</td>
+</tr>
+
+<tr>
+<td class="org-left">reduce</td>
+<td class="org-left">forEach</td>
+</tr>
+
+<tr>
+<td class="org-left">skip</td>
+<td class="org-left">sorted</td>
+</tr>
+
+<tr>
+<td class="org-left">from</td>
+<td class="org-left">to</td>
+</tr>
+
+<tr>
+<td class="org-left">collect</td>
+<td class="org-left">count</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section id="slide-org0443040">
+<h3 id="org0443040">More examples: forEach and flatMap</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java">Stream.of(1,2,3,4)
+    .flatMap(x -&gt; Stream.of(x-1,x+1))
+    .forEach(x -&gt; {
+            System.out.println(x);
+        });
+<span style="color: #656565;">// </span><span style="color: #757575;">0, 2, 1, 3 ...</span>
+</pre>
+</div>
+
+</section>
+<section id="slide-orgf32c9b8">
+<h3 id="orgf32c9b8">More examples: collect</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">List</span>&lt;<span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">l</span> = Stream.of(1,2,3,4)
+    .map(x -&gt; 2*x)
+    .collect(Collectors.toList());
+</pre>
+</div>
+
+
+</section>
+</section>
+<section>
+<section id="slide-org3a812e0">
+<h2 id="org3a812e0">Method references</h2>
+<div class="outline-text-2" id="text-org3a812e0">
+</div></section>
+<section id="slide-org6c85374">
+<h3 id="org6c85374">Functions as values</h3>
+<ul>
+<li>In FP, functions are values</li>
+<li>In Java: functions are objects</li>
+<li>But methods are not functions</li>
+<li>&#x2026; syntax sugar</li>
+
+</ul>
+
+</section>
+<section id="slide-orgd6a852e">
+<h3 id="orgd6a852e">This code</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java">Stream.of(1,2,3,4)
+        .map(x -&gt; Math.sqrt(x))
+        .forEach(x -&gt; {
+            System.out.println(x);
+        });
+</pre>
+</div>
+
+</section>
+<section id="slide-org854f93b">
+<h3 id="org854f93b">can be sugared into</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java">Stream.of(1,2,3,4)
+    .map(Math::sqrt)
+    .forEach(System.out::println);
+</pre>
+</div>
+
+</section>
+<section id="slide-org09dfef9">
+<h3 id="org09dfef9">What can be called with references?</h3>
+<ul>
+<li>static methods (<code>Math::sqrt</code>)</li>
+<li>constructors (<code>Point::new</code>)</li>
+<li>instance methods (<code>Point::getX</code>)</li>
+<li>instance methods of an specific object (<code>System.out::println</code>)</li>
+
+</ul>
+
+</section>
+</section>
+<section>
+<section id="slide-org8829112">
+<h2 id="org8829112">Default methods</h2>
+<div class="outline-text-2" id="text-org8829112">
+</div></section>
+<section id="slide-org4ca18f1">
+<h3 id="org4ca18f1">Two problems with interfaces</h3>
+<ul>
+<li>Functional interfaces require <i>one</i> method
+<ul>
+<li>A number of existing interfaces have more than one</li>
+
+</ul></li>
+<li>Expression problem: how to add a method to an interface?</li>
+
+</ul>
+
+</section>
+<section id="slide-org33c15df">
+<h3 id="org33c15df">A solution: default methods</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #5180b3;">interface</span> <span style="color: #cd5542;">MathVector</span> {
+    <span style="color: #cd5542;">double</span> <span style="color: #6aaf50;">modulus</span>();
+    <span style="color: #5180b3;">default</span> <span style="color: #cd5542;">boolean</span> <span style="color: #6aaf50;">isAtOrigin</span>(){
+        <span style="color: #5180b3;">return</span> modulus() == 0.0;
+    }
+}
+<span style="color: #5180b3;">static</span> <span style="color: #5180b3;">class</span> <span style="color: #cd5542;">MyPoint</span> <span style="color: #5180b3;">implements</span> <span style="color: #cd5542;">MathVector</span>{
+    <span style="color: #5180b3;">final</span> <span style="color: #cd5542;">double</span> <span style="color: #baba36;">x</span>;
+    <span style="color: #5180b3;">final</span> <span style="color: #cd5542;">double</span> <span style="color: #baba36;">y</span>;
+    <span style="color: #6aaf50;">MyPoint</span>(<span style="color: #cd5542;">double</span> <span style="color: #baba36;">x</span>, <span style="color: #cd5542;">double</span> <span style="color: #baba36;">y</span>){<span style="color: #5180b3;">this</span>.x = x; <span style="color: #5180b3;">this</span>.y = y;}
+    <span style="color: #5180b3;">public</span> <span style="color: #cd5542;">double</span> <span style="color: #6aaf50;">modulus</span>(){<span style="color: #5180b3;">return</span> Math.sqrt(x*x + y*y);}
+}
+</pre>
+</div>
+
+</section>
+<section id="slide-org1a4ef7d">
+<h3 id="org1a4ef7d">Caveats</h3>
+<ul>
+<li>Limited multiple inheritance (is this a caveat?)</li>
+<li>Conflicts on default methods need to be manually resolved</li>
+
+</ul>
+
+
+</section>
+</section>
+<section>
+<section id="slide-orga002675">
+<h2 id="orga002675">JavaSlang / vavr</h2>
+<div class="outline-text-2" id="text-orga002675">
+</div></section>
+<section id="slide-org21564be">
+<h3 id="org21564be">Intro</h3>
+<ul>
+<li>Functional data and control structures for Java8</li>
+<li>Formerly javaslang. Now <code>vavr</code></li>
+<li>Terser than native java</li>
+
+</ul>
+
+</section>
+<section id="slide-orgfd40629">
+<h3 id="orgfd40629">Setup</h3>
+<ul>
+<li>maven package: <code>io.vavr:vavr:0.9.0</code></li>
+<li>imports <code>io.vavr</code></li>
+
+</ul>
+
+</section>
+<section id="slide-org86214ee">
+<h3 id="org86214ee">Example: Lists</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #ab75c3;">io</span>.<span style="color: #ab75c3;">vavr</span>.<span style="color: #ab75c3;">collection</span>.<span style="color: #cd5542;">List</span>&lt;<span style="color: #cd5542;">Double</span>&gt; <span style="color: #baba36;">l</span> = List.of(1,2,3,4,5,6,7,8)
+    .map(Math::sqrt)
+    .filter(x-&gt;x&gt;1.7);
+</pre>
+</div>
+
+</section>
+<section id="slide-org706576e">
+<h3 id="org706576e">Option</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #5180b3;">class</span> <span style="color: #cd5542;">OptionExample</span> {
+
+    <span style="color: #5180b3;">static</span> <span style="color: #cd5542;">Option</span>&lt;<span style="color: #cd5542;">String</span>&gt; <span style="color: #6aaf50;">findUsername</span>(<span style="color: #cd5542;">Integer</span> <span style="color: #baba36;">userId</span>){
+        <span style="color: #5180b3;">if</span>(userId == 42){
+            <span style="color: #5180b3;">return</span> Option.some(<span style="color: #bdbc61;">"user1"</span>);
+        } <span style="color: #5180b3;">else</span> {
+            <span style="color: #5180b3;">return</span> Option.none();
+        }
+    }
+    <span style="color: #5180b3;">public</span> <span style="color: #5180b3;">static</span> <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">main</span> (<span style="color: #cd5542;">String</span>... <span style="color: #baba36;">args</span>) <span style="color: #5180b3;">throws</span> <span style="color: #cd5542;">Exception</span> {
+        findUsername(42)
+         .map(x -&gt; x + <span style="color: #bdbc61;">"@example.org"</span>)
+         .forEach(System.out::println);
+    }
+}
+</pre>
+</div>
+
+</section>
+<section id="slide-orga9e235b">
+<h3 id="orga9e235b">Tuple</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">Tuple2</span>&lt;<span style="color: #cd5542;">Double</span>, <span style="color: #cd5542;">Double</span>&gt; <span style="color: #baba36;">p</span> = Tuple.of(3.0,4.0);
+<span style="color: #cd5542;">List</span>&lt;<span style="color: #cd5542;">Tuple2</span>&lt;<span style="color: #cd5542;">Double</span>,<span style="color: #cd5542;">Double</span>&gt;&gt; <span style="color: #baba36;">closeToP</span> = List.rangeClosed(0,100)
+    .map(Double::<span style="color: #5180b3;">new</span>)
+    .map(x -&gt; Tuple.of(x,x))
+    .filter(x -&gt; Math.sqrt((x._1 - p._1) * (x._1 - p._1)
+                        + (x._2 - p._2) * (x._2 - p._2))&lt;5.0);
+
+closeToP.forEach(System.out::println);
+</pre>
+</div>
+
+</section>
+<section id="slide-org8548de2">
+<h3 id="org8548de2">Functions</h3>
+<ul>
+<li>functional interfaces <code>Function</code>
+<ul>
+<li><code>apply</code> method</li>
+
+</ul></li>
+<li><code>Function2&lt;Integer, String, String&gt;</code>
+<ul>
+<li>takes Int, String</li>
+<li>returns String</li>
+
+</ul></li>
+
+</ul>
+
+</section>
+<section id="slide-org547412b">
+<h3 id="org547412b">Functions examples</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">Function1</span>&lt;<span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">addOne</span> = x -&gt; x + 1;
+<span style="color: #cd5542;">Function1</span>&lt;<span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">byTwo</span> = x -&gt; x * 2;
+<span style="color: #cd5542;">Function1</span>&lt;<span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">plusOneByTwo</span> = byTwo.compose(addOne);
+<span style="color: #cd5542;">Function1</span>&lt;<span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">theAnswer</span> = Function1.constant(42);
+<span style="color: #cd5542;">Function2</span>&lt;<span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Integer</span>, <span style="color: #cd5542;">Option</span>&lt;<span style="color: #cd5542;">Integer</span>&gt;&gt; <span style="color: #baba36;">safeDiv</span> = Function2.lift(div);
+</pre>
+</div>
+
+</section>
+<section id="slide-orgc2e6187">
+<h3 id="orgc2e6187">Try and Pattern Matching</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #5180b3;">import</span> <span style="color: #ab75c3;">io</span>.<span style="color: #ab75c3;">vavr</span>.<span style="color: #ab75c3;">control</span>.<span style="color: #cd5542;">Try</span>;
+<span style="color: #5180b3;">import</span> <span style="color: #5180b3;">static</span> <span style="color: #ab75c3;">io</span>.<span style="color: #ab75c3;">vavr</span>.<span style="color: #ab75c3;">API</span>.*;
+<span style="color: #5180b3;">import</span> <span style="color: #5180b3;">static</span> <span style="color: #ab75c3;">io</span>.<span style="color: #ab75c3;">vavr</span>.<span style="color: #ab75c3;">Patterns</span>.*;
+
+<span style="color: #5180b3;">class</span> <span style="color: #cd5542;">TryExample</span> {
+
+    <span style="color: #5180b3;">public</span> <span style="color: #5180b3;">static</span> <span style="color: #cd5542;">void</span> <span style="color: #6aaf50;">main</span> (<span style="color: #cd5542;">String</span>... <span style="color: #baba36;">args</span>) <span style="color: #5180b3;">throws</span> <span style="color: #cd5542;">Exception</span> {
+        <span style="color: #cd5542;">Try</span>&lt;<span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">t</span> = Try.of(()-&gt;1/1);
+        <span style="color: #cd5542;">String</span> <span style="color: #baba36;">s</span> = Match(t).of(
+                Case($Success($()), v -&gt; <span style="color: #bdbc61;">"OK:"</span> + v),
+                Case($Failure($()), e -&gt; <span style="color: #bdbc61;">"FAILURE!"</span>)
+        );
+        System.out.println(s);
+
+    }
+}
+</pre>
+</div>
+
+</section>
+<section id="slide-org6b6cb4e">
+<h3 id="org6b6cb4e">Concurrency: promises and futures</h3>
+<div class="org-src-container">
+
+<pre  class="src src-java"><span style="color: #cd5542;">Future</span>&lt;<span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">f</span> = Future.of(()-&gt;{Thread.sleep(1000); <span style="color: #5180b3;">return</span> 1;});
+System.out.println(f.map(x-&gt;x+1).get());
+
+<span style="color: #cd5542;">Promise</span>&lt;<span style="color: #cd5542;">Integer</span>&gt; <span style="color: #baba36;">p</span> = Promise.make();
+p.future()
+    .mapTry(x-&gt; {Thread.sleep(1000); <span style="color: #5180b3;">return</span> x * 2;})
+    .forEach(System.out::println);
+System.out.println(<span style="color: #bdbc61;">"Promise made"</span>);
+p.success(32);
+System.out.println(<span style="color: #bdbc61;">"Promise succeeded"</span>);
+</pre>
+</div>
+</section>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/lib/js/head.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'https://cdnjs.cloudflare.com/ajax/libs/reveal.js/3.5.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
